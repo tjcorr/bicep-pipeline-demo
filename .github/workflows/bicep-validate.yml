@@ -3,6 +3,9 @@ name: 'Bicep Check'
 on:
   push:
 
+env:
+  LOCATION: "eastus"
+  
 #Special permissions required for OIDC authentication
 permissions:
   id-token: write
@@ -33,12 +36,23 @@ jobs:
       with:
         inlineScript: az bicep build --file main.bicep
         
+    # Preview changes
+    - name: "What-If"
+      uses: Azure/cli@v1
+      with:
+        inlineScript: |
+          az deployment sub what-if \
+            --name whatif-${{ github.run_id }} \
+            --template-file main.bicep \
+            --location $LOCATION \
+
     # Validate whether a template is valid at subscription scope
     - name: Bicep Validate
       uses: Azure/cli@v1
       with:
+        # this command checks permissions as well so will fail with RO permissions
         inlineScript: |
-          az deployment sub validate \
-            --name validate-${{ github.run_id }} \
-            --template-file main.bicep \
-            --location "eastus"
+#          az deployment sub validate \
+#            --name validate-${{ github.run_id }} \
+#            --template-file main.bicep \
+#            --location $LOCATION
