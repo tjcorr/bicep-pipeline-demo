@@ -15,7 +15,9 @@ jobs:
   bicep-plan:
     name: 'Bicep Check'
     runs-on: ubuntu-latest
-    environment: production-readonly
+    # Bicep What-if / Validate functions also check if your role has permisisons to create the resources
+    # The read-only account here actually needs to have read/write permisisons.
+    environment: production
     
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -36,23 +38,12 @@ jobs:
       with:
         inlineScript: az bicep build --file main.bicep
         
-    # Preview changes
-    - name: "What-If"
-      uses: Azure/cli@v1
-      with:
-        inlineScript: |
-          az deployment sub what-if \
-            --name whatif-${{ github.run_id }} \
-            --template-file main.bicep \
-            --location $LOCATION \
-
     # Validate whether a template is valid at subscription scope
     - name: Bicep Validate
       uses: Azure/cli@v1
       with:
-        # this command checks permissions as well so will fail with RO permissions
         inlineScript: |
-#          az deployment sub validate \
-#            --name validate-${{ github.run_id }} \
-#            --template-file main.bicep \
-#            --location $LOCATION
+          az deployment sub validate \
+            --name validate-${{ github.run_id }} \
+            --template-file main.bicep \
+            --location $LOCATION
