@@ -41,3 +41,4 @@ jobs:
           az deployment sub validate \
             --name validate-${{ github.run_id }} \
             --template-file main.bicep
+            --location "eastus"
