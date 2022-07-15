@@ -105,7 +105,7 @@ jobs:
             })
             
   bicep-deploy:
-    name: 'Bicep Deployy'
+    name: 'Bicep Deploy'
     #TODO can we easily determine if there are any changes to deploy?
     if: github.ref == 'refs/heads/main' 
     runs-on: ubuntu-latest
